@@ -1,0 +1,6 @@
+[submodule "log4j-json-layout"]
+	path = log4j-json-layout
+	url = https://github.com/saj1th/log4j-json-layout
+[submodule "spark-statsd"]
+	path = spark-statsd
+	url = https://github.com/saj1th/spark-statsd
