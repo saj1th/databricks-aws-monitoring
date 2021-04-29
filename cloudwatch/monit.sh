@@ -5,9 +5,6 @@ set -ex
 # jar for custom json logging
 wget -q -O /mnt/driver-daemon/jars/log4j12-json-layout-1.0.0.jar https://sa-iot.s3.ca-central-1.amazonaws.com/collateral/log4j12-json-layout-1.0.0.jar
 
-# jar for statsd sink
-wget -q -O /mnt/driver-daemon/jars/spark-statsd-2.4.3.jar https://sa-iot.s3.ca-central-1.amazonaws.com/collateral/spark-statsd-2.4.3.jar
-
 cd /tmp
 
 # download cloudwatch agent
@@ -39,7 +36,7 @@ if  [  ! -z $DB_IS_DRIVER ] && [ $DB_IS_DRIVER = TRUE ] ; then
     cat > /tmp/amazon-cloudwatch-agent.json << EOF
 {"agent":{"metrics_collection_interval":10,"logfile":"/var/log/amazon-cloudwatch-agent.log","debug":false},"logs":{"logs_collected":{"files":{"collect_list":[{"file_path":"/databricks/driver/logs/log4j-active.log","log_group_name":"/databricks/$CLUSTER_NAME/driver/spark-log","log_stream_name":"databricks-cloudwatch"},{"file_path":"/databricks/driver/logs/stderr","log_group_name":"/databricks/$CLUSTER_NAME/driver/stderr","log_stream_name":"databricks-cloudwatch"},{"file_path":"/databricks/driver/logs/stdout","log_group_name":"/databricks/$CLUSTER_NAME/driver/stdout","log_stream_name":"databricks-cloudwatch"}]}}},"metrics":{"namespace":"$CLUSTER_NAME","metrics_collected":{"statsd":{"service_address":":8125"},"cpu":{"resources":["*"],"measurement":[{"name":"cpu_usage_idle","rename":"DRIVER_CPU_USAGE_IDLE","unit":"Percent"},{"name":"cpu_usage_iowait","rename":"DRIVER_CPU_USAGE_IOWAIT","unit":"Percent"},{"name":"cpu_time_idle","rename":"DRIVER_CPU_TIME_IDLE","unit":"Percent"},{"name":"cpu_time_iowait","rename":"DRIVER_CPU_TIME_IOWAIT","unit":"Percent"}],"totalcpu":true},"disk":{"resources":["/"],"measurement":[{"name":"disk_free","rename":"DRIVER_DISK_FREE","unit":"Gigabytes"},{"name":"disk_inodes_free","rename":"DRIVER_DISK_INODES_FREE","unit":"Count"},{"name":"disk_inodes_total","rename":"DRIVER_DISK_INODES_TOTAL","unit":"Count"},{"name":"disk_inodes_used","rename":"DRIVER_DISK_INODES_USED","unit":"Count"}]},"diskio":{"resources":["*"],"measurement":[{"name":"diskio_iops_in_progress","rename":"DRIVER_DISKIO_IOPS_IN_PROGRESS","unit":"Megabytes"},{"name":"diskio_read_time","rename":"DRIVER_DISKIO_READ_TIME","unit":"Megabytes"},{"name":"diskio_write_time","rename":"DRIVER_DISKIO_WRITE_TIME","unit":"Megabytes"}]},"mem":{"measurement":[{"name":"mem_available","rename":"DRIVER_MEM_AVAILABLE","unit":"Megabytes"},{"name":"mem_total","rename":"DRIVER_MEM_TOTAL","unit":"Megabytes"},{"name":"mem_used","rename":"DRIVER_MEM_USED","unit":"Megabytes"},{"name":"mem_used_percent","rename":"DRIVER_MEM_USED_PERCENT","unit":"Megabytes"},{"name":"mem_available_percent","rename":"DRIVER_MEM_AVAILABLE_PERCENT","unit":"Megabytes"}]},"net":{"resources":["eth0"],"measurement":[{"name":"net_bytes_recv","rename":"DRIVER_NET_BYTES_RECV","unit":"Bytes"},{"name":"net_bytes_sent","rename":"DRIVER_NET_BYTES_SENT","unit":"Bytes"}]}},"append_dimensions":{"InstanceId":"\${aws:InstanceId}"}}}
 EOF
-  
+
   sed -i '/^log4j.appender.publicFile.layout/ s/^/#/g' /home/ubuntu/databricks/spark/dbconf/log4j/driver/log4j.properties
   sed -i '/log4j.appender.publicFile=com.databricks.logging.RedactionRollingFileAppender/a log4j.appender.publicFile.layout=com.databricks.labs.log.appenders.JsonLayout' /home/ubuntu/databricks/spark/dbconf/log4j/driver/log4j.properties
 else

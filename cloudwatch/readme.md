@@ -11,9 +11,6 @@ set -ex
 # jar for custom json logging
 wget -q -O /mnt/driver-daemon/jars/log4j12-json-layout-1.0.0.jar https://sa-iot.s3.ca-central-1.amazonaws.com/collateral/log4j12-json-layout-1.0.0.jar
 
-# jar for statsd sink
-wget -q -O /mnt/driver-daemon/jars/spark-statsd-2.4.3.jar https://sa-iot.s3.ca-central-1.amazonaws.com/collateral/spark-statsd-2.4.3.jar
-
 cd /tmp
 
 # download cloudwatch agent
